@@ -16,13 +16,6 @@ module.exports = function(sequelize, DataTypes) {
       validate: {
       }
     },
-    last_check_in: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      validate: {
-        isDate: true
-      }
-    },
     latitude: {
       type: DataTypes.FLOAT,
       allowNull: true,
@@ -46,11 +39,41 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       validate: {
       }
-    }
+    },
+    last_check_in: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      validate: {
+        isDate: true
+      }
+    },
+    check_in_count: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      validate: {
+        isInt: true,
+        min: 0
+      }
+    },
+    last_update_check_in: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      validate: {
+        isDate: true
+      }
+    },
+    update_check_in_count: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      validate: {
+        isInt: true,
+        min: 0
+      }
+    },
   }, {
     classMethods: {
       associate: function(models) {
-        // associations can be defined here
+        Guardian.belongsTo(models.GuardianSoftware, {as: 'Version'});
       }
     }
   });

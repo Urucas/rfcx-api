@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     measured_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+      allowNull: true,
       validate: {
         isDate: true
       }
@@ -54,8 +55,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       validate: {
         isInt: true,
-        min: 0,
-        max: 300000
+        min: 0
       }
     },
     internal_luminosity: {
@@ -72,20 +72,31 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       validate: {
         isInt: true,
-        min: 0,
-        max: 3000000
+        min: 0
+      }
+    },
+    request_latency_api: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        isInt: true,
+        min: 0
+      }
+    },
+    request_latency_guardian: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        isInt: true,
+        min: 0
       }
     }
   }, {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
-        
-
-        return {
-          belongsTo: { model: "GuardianSoftware", as: "SoftwareVersion" }
-        };
-        
+        GuardianCheckIn.belongsTo(models.Guardian, {as: 'Guardian'});
+        GuardianCheckIn.belongsTo(models.GuardianSoftware, {as: 'Version'});
       }
     }
   });

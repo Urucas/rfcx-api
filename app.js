@@ -36,10 +36,14 @@ app.use(passport.initialize());
 // Define/Load Routes
 var routes = {
   "v1": {
-    "users": [ require("./routes/v1/users")(app, passport) ],
-    "mapping": [ require("./routes/v1/mapping") ],
-    "guardians": [ require("./routes/v1/guardians"), require("./routes/v1/guardiansoftware") ],
-    "checkins": [ require("./routes/v1/checkins") ]
+  "users": [ require("./routes/v1/users") ],
+  "guardians": [  require("./routes/v1/guardians"),
+                  require("./routes/v1/guardians-software"), 
+                  require("./routes/v1/guardians-checkins"), 
+                  require("./routes/v1/guardians-checkins-audio"), 
+                  require("./routes/v1/guardians-alerts")
+                ],
+  "mapping": [ require("./routes/v1/mapping") ]
   },
   "v2": {}
 };
@@ -48,15 +52,15 @@ var routes = {
 for (apiVersion in routes) {
   middleware[apiVersion] = require("./middleware/"+apiVersion+".js").middleware(app);
   for (middlewareFunc in middleware[apiVersion]) {
-     app.use("/"+apiVersion+"/", middleware[apiVersion][middlewareFunc]);
+   app.use("/"+apiVersion+"/", middleware[apiVersion][middlewareFunc]);
   }
 }
 // Initialize Routes
 for (apiVersion in routes) {
   for (routeName in routes[apiVersion]) {
-    for (var i = 0; i < routes[apiVersion][routeName].length; i++) {
-      app.use("/"+apiVersion+"/"+routeName, routes[apiVersion][routeName][i]);
-    }
+  for (route in routes[apiVersion][routeName]) {
+    app.use("/"+apiVersion+"/"+routeName, routes[apiVersion][routeName][route]);
+  }
   }
 }
 
@@ -65,41 +69,27 @@ app.get("/health_check",function(req,res){ res.status(200).json({app:app.get("ti
 
 // Catch & Report Various HTTP Errors (needs some work)
 
-// app.use(function(req, res, next) {
-//   var err = new Error("Not Found");
-//   err.status = 404;
-//   next(err);
-// });
-
-// app.use(function(err, req, res, next) {
-//   if (process.env.NODE_ENV === "development") { console.log(err); }
-//   res.status(err.status || 500).json({
-//     message: err.message,
-//     error: (process.env.NODE_ENV === "development") ? err : {}
-//   });
-// });
-
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500).json({
-            message: err.message,
-            error: err
-        });
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500).json({
+      message: err.message,
+      error: err
     });
+  });
 }
 
 app.use(function(err, req, res, next) {
-    res.status(err.status || 500).json({
-        message: err.message,
-        error: {}
-    });
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: {}
+  });
 });
 
 module.exports = app;

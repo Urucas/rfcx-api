@@ -4,7 +4,8 @@ module.exports = function(sequelize, DataTypes) {
   var GuardianAudio = sequelize.define("GuardianAudio", {
     guid: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      unique: true
     },
     measured_at: {
       type: DataTypes.DATE,
@@ -32,18 +33,28 @@ module.exports = function(sequelize, DataTypes) {
     sha1_checksum: {
       type: DataTypes.STRING,
       allowNull: true,
+      unique: true,
       validate: {
       }
     },
-    ingestion_sqs_msg_id: {
-      type: DataTypes.UUID,
+    url: {
+      type: DataTypes.STRING,
       allowNull: true,
-      unique: true
+      unique: true,
+      validate: {
+      }
+    },
+    analysis_sqs_msg_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+      }
     }
   }, {
     classMethods: {
       associate: function(models) {
-        // associations can be defined here
+        GuardianAudio.belongsTo(models.GuardianCheckIn, {as: 'CheckIn'});
+        GuardianAudio.belongsTo(models.Guardian, {as: 'Guardian'});
       }
     },
     tableName: "GuardianAudio"
