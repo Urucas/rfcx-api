@@ -16,6 +16,9 @@ var favicon = require("serve-favicon");
 var logger = require("morgan");
 var multer = require("multer");
 var passport = require("passport");
+
+var bodyParser = require('body-parser');
+
 var middleware = {};
 var app = express();
 
@@ -26,6 +29,9 @@ app.use(logger("dev"));
 app.use(multer(require("./config/multer").config(process.env)));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define/Load Routes
 var routes = {
